@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>В Контакте | IFlash AS2 Example</title>
+    <script type="text/javascript" src="http://vkontakte.ru/js/api/xd_connection.js"></script>
+    <script type="text/javascript" src="api_connection.min.js"></script>
+    <script type="text/javascript" src="resizer.min.js"></script>
+    <script type="text/javascript">
+      IFlash.init('flash_container', 607, 500);
+      onDOMReady(function() { Resizer.add(document.body); });
+    </script>
+    <style>
+      body { margin: 0; padding: 0; }
+      a { color: #2b587a; display: block; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .box { font-family: verdana; margin-top: 15px; }
+      #vk_groups { float: right; }
+      #vk_like { clear: none !important; }
+      #vk_comments_wrap { border-bottom: 1px solid #dae1e8; }
+      .banner_wrap { width: 342px; margin-top: 11px; }
+      .banner { font-size: 12px; background: #ffffff; border: 1px solid #bec8d3; padding: 13px 10px; text-align: center; width: 322px; height: 55px; }
+      .banner h4 { margin: 0 0 7px 0; font-size: 14px; font-weight: bold; }
+      #flash_only_link { font-size: 11px; padding: 15px 10px; text-align: center; }
+      a#flash_only_link:hover { background: #e9edf1; }
+    </style>
+  </head>
+  <body>
+    <div id="flash_container"></div>
+    <a href="javascript:;" class="box" id="flash_only_link" onclick="location.href=location.href.split('index_as2').join('index');">
+      Показать пример приложения без дополнительных HTML-элементов, только Flash »
+    </a>
+    <div id="vidgets_wrap" class="box">
+      <div id="vk_groups"></div>
+      <div id="vk_like"></div>
+      <a href="javascript:;" class="banner_wrap" onclick="IFlash.resizeFlash(607, 300); return false;">
+        <div class="banner">
+          <h4>Например, БАННЕР</h4>
+          <div>Нажмите, чтобы выполнить IFlash.resizeFlash(607, 300);</div>
+        </div>
+      </a>
+    </div>
+    <div id="vk_comments_wrap" class="box">
+      <div id="vk_comments"></div>
+    </div>
+    <script type="text/javascript">
+      VK.Widgets.Group("vk_groups", {mode: 1, width: 250}, 20710465);
+      VK.Widgets.Like("vk_like", {width: 342, pageTitle: 'IFrame-посредник для Flash-приложений. Пример приложения на ActionScript 2.0.', pageUrl: 'http://vkontakte.ru/app1986275'}, 2);
+      VK.Widgets.Comments("vk_comments", {width: 607, limit: 10, attach: "*", autoPublish: 0, norealtime: 1, pageUrl: 'http://vkontakte.ru/app1986275'}, 'as2');
+    </script>
+  </body>
+</html>
