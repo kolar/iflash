@@ -29,58 +29,62 @@ class TestApp extends MovieClip {
     format.color = 0x000000;
     format.size = 11;
     tf.setNewTextFormat(format);
-    tf.text = "Application initialized\n";
+    tf.text = "";
+    log("Application initialized\n");
     
     var t = this;
     
     VK = new APIConnection('vk.asmico.ru', function(VK) {
       VK.onApplicationAdded = function() {
-        t.tf.text += "Application added\n";
+        t.log("Application added\n");
       };
       VK.onSettingsChanged = function(s) {
-        t.tf.text += "Settings changed: " + s + "\n";
+        t.log("Settings changed: " + s + "\n");
       };
       VK.onBalanceChanged = function(b) {
-        t.tf.text += "Balance changed: " + b + "\n";
+        t.log("Balance changed: " + b + "\n");
       };
       VK.onMerchantPaymentCancel = function() {
-        t.tf.text += "Merchant payment canceled\n";
+        t.log("Merchant payment canceled\n");
       };
       VK.onMerchantPaymentSuccess = function(m) {
-        t.tf.text += "Merchant payment success: " + m + "\n";
+        t.log("Merchant payment success: " + m + "\n");
       };
       VK.onMerchantPaymentFail = function() {
-        t.tf.text += "Merchant payment failed\n";
+        t.log("Merchant payment failed\n");
       };
       VK.onProfilePhotoSave = function() {
-        t.tf.text += "Profile photo saved\n";
+        t.log("Profile photo saved\n");
       };
       VK.onProfilePhotoCancel = function() {
-        t.tf.text += "Profile photo canceled\n";
+        t.log("Profile photo canceled\n");
       };
       VK.onWallPostSave = function() {
-        t.tf.text += "Wall post saved\n";
+        t.log("Wall post saved\n");
       };
       VK.onWallPostCancel = function() {
-        t.tf.text += "Wall post canceled\n";
+        t.log("Wall post canceled\n");
       };
       VK.onWindowResized = function(w, h) {
-        t.tf.text += "Window resized: " + w + ", " + h + "\n";
+        t.log("Window resized: " + w + ", " + h + "\n");
         t.tf._height = h - 16 - t.sy;
       };
       VK.onLocationChanged = function(l) {
-        t.tf.text += "Location changed: " + l + "\n";
+        t.log("Location changed: " + l + "\n");
       };
       VK.onWindowBlur = function() {
-        t.tf.text += "Window blur\n";
+        t.log("Window blur\n");
       };
       VK.onWindowFocus = function() {
-        t.tf.text += "Window focus\n";
+        t.log("Window focus\n");
       };
-      VK.onScrollTop = function(s) {
-        t.tf.text += "scrollTop = " + s + "\n";
+      VK.onScrollTop = function(s, h) {
+        t.log("onScrollTop: " + s + ", " + h + "\n");
       };
-      t.tf.text += "Connection inited.\n";
+      VK.onScroll = function(s, h) {
+        t.log("onScroll: " + s + ", " + h + "\n");
+      };
+      t.log("Connection inited.\n");
       
       VK.api('photos.getProfileUploadServer', {}, function(data) {
         t.upload_url = data.upload_url;
@@ -151,20 +155,20 @@ class TestApp extends MovieClip {
               };
           fileRef.addListener({
             onUploadCompleteData: function(file:FileReference, data: String) {
-              t.tf.text += "Uploaded.\n";
+              t.log("Uploaded.\n");
               var r = json2obj(data);
               t.VK.api('photos.saveProfilePhoto', r,  function(data) {
-                t.tf.text += "OK: photos.saveProfilePhoto: "+data.photo_src+"\n";
+                t.log("OK: photos.saveProfilePhoto: "+data.photo_src+"\n");
               }, function(data) {
-                t.tf.text += "Error: photos.saveProfilePhoto: #"+data.error_code+" "+data.error_msg+"\n";
+                t.log("Error: photos.saveProfilePhoto: #"+data.error_code+" "+data.error_msg+"\n");
               });
             },
             onProgress: function(file:FileReference, bytesLoaded:Number, bytesTotal:Number) {
-              t.tf.text += "  ... " + Math.round(bytesLoaded*100/bytesTotal) + "%\n";
+              t.log("  ... " + Math.round(bytesLoaded*100/bytesTotal) + "%\n");
             },
             onSelect: function(file:FileReference) {
               file.upload(upload_url, 'photo');
-              t.tf.text += file.name+ " start uploading ...\n";
+              t.log(file.name+ " start uploading ...\n");
             }
           });
           fileRef.browse([{
@@ -181,10 +185,10 @@ class TestApp extends MovieClip {
             photo_id: '-20710465_217925006',
             message: 'Пост из IFlash.'
           }, function(data) {
-            t.tf.text += "OK: wall.savePost: "+data.post_hash+" "+data.photo_src+"\n";
+            t.log("OK: wall.savePost: "+data.post_hash+" "+data.photo_src+"\n");
             t.VK.callMethod('saveWallPost', data.post_hash);
           }, function(data) {
-            t.tf.text += "Error: wall.savePost: #"+data.error_code+" "+data.error_msg+"\n";
+            t.log("Error: wall.savePost: #"+data.error_code+" "+data.error_msg+"\n");
           });
         }
       },
@@ -223,9 +227,9 @@ class TestApp extends MovieClip {
         label: 'API.getServerTime()',
         listener: function() {
           t.VK.api('getServerTime', {}, function(data) {
-            t.tf.text += "OK: getServerTime: "+data+"\n";
+            t.log("OK: getServerTime: "+data+"\n");
           }, function(data) {
-            t.tf.text += "Error: getServerTime: #"+data.error_code+" "+data.error_msg+"\n";
+            t.log("Error: getServerTime: #"+data.error_code+" "+data.error_msg+"\n");
           });
         }
       },
@@ -233,9 +237,9 @@ class TestApp extends MovieClip {
         label: 'API.getProfiles( viewer_id )',
         listener: function() {
           t.VK.api('getProfiles', {uids: _root.viewer_id}, function(data) {
-            t.tf.text += "OK: getProfiles: "+data[0].first_name+" "+data[0].last_name+"\n";
+            t.log("OK: getProfiles: "+data[0].first_name+" "+data[0].last_name+"\n");
           }, function(data) {
-            t.tf.text += "Error: getProfiles: #"+data.error_code+" "+data.error_msg+"\n";
+            t.log("Error: getProfiles: #"+data.error_code+" "+data.error_msg+"\n");
           });
         }
       },
@@ -245,9 +249,9 @@ class TestApp extends MovieClip {
           t.VK.api('wall.post', {
             message: 'Я умею постить на стену. IFlash.'
           }, function(data) {
-            t.tf.text += "OK: wall.post: post_id: "+data.post_id+"\n";
+            t.log("OK: wall.post: post_id: "+data.post_id+"\n");
           }, function(data) {
-            t.tf.text += "Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n";
+            t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
         }
       },
@@ -258,9 +262,9 @@ class TestApp extends MovieClip {
             message: 'Я умею постить на стену фото. IFlash.',
             attachment: 'photo-20710465_217925006'
           }, function(data) {
-            t.tf.text += "OK: wall.post: post_id: "+data.post_id+"\n";
+            t.log("OK: wall.post: post_id: "+data.post_id+"\n");
           }, function(data) {
-            t.tf.text += "Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n";
+            t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
         }
       },
@@ -271,9 +275,9 @@ class TestApp extends MovieClip {
             message: 'Я умею постить на стену музыку. IFlash.',
             attachment: 'audio1661530_73182523'
           }, function(data) {
-            t.tf.text += "OK: wall.post: post_id: "+data.post_id+"\n";
+            t.log("OK: wall.post: post_id: "+data.post_id+"\n");
           }, function(data) {
-            t.tf.text += "Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n";
+            t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
         }
       },
@@ -284,9 +288,9 @@ class TestApp extends MovieClip {
             message: 'Я умею постить на стену видео. IFlash.',
             attachment: 'video1661530_158881807'
           }, function(data) {
-            t.tf.text += "OK: wall.post: post_id: "+data.post_id+"\n";
+            t.log("OK: wall.post: post_id: "+data.post_id+"\n");
           }, function(data) {
-            t.tf.text += "Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n";
+            t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
         }
       },
@@ -294,6 +298,25 @@ class TestApp extends MovieClip {
         label: 'http://vk.com/kolar',
         listener: function() {
           t.VK.navigateToURL('http://vk.com/kolar');
+        }
+      },
+      {
+        label: 'API.wall.post( photo + audio + video )',
+        listener: function() {
+          t.VK.api('wall.post', {
+            message: 'Я умею постить на стену несколько элементов. IFlash.',
+            attachments: 'photo-20710465_217925006,audio1661530_73182523,video1661530_158881807'
+          }, function(data) {
+            t.log("OK: wall.post: post_id: "+data.post_id+"\n");
+          }, function(data) {
+            t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
+          });
+        }
+      },
+      {
+        label: 'Subscribe to scroll',
+        listener: function() {
+          t.VK.callMethod('scrollSubscribe', true);
         }
       }
     ];
@@ -319,5 +342,9 @@ class TestApp extends MovieClip {
     
     Stage.align = "TL";
     Stage.scaleMode = "noScale";
+  }
+  public function log(msg) {
+    tf.text += msg;
+    tf.scroll = tf.maxscroll;
   }
 }

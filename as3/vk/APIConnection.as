@@ -54,7 +54,7 @@
     }
     
     public function debug(msg:*):void {
-      if (!msg || !msg.toString) {
+      if (!msg.toString) {
         return;
       }
       sendData('debug', msg.toString());
@@ -170,6 +170,12 @@
       customEvent.apply(this, paramsArr);
     }
     
+    private function onScroll(...params): void {
+      var paramsArr:Array = params as Array;
+      paramsArr.unshift('onScroll');
+      customEvent.apply(this, paramsArr);
+    }
+    
     /*
      * Private methods
      */
@@ -192,6 +198,7 @@
         ExternalInterface.addCallback('onWindowBlur', onWindowBlur);
         ExternalInterface.addCallback('onWindowFocus', onWindowFocus);
         ExternalInterface.addCallback('onScrollTop', onScrollTop);
+        ExternalInterface.addCallback('onScroll', onScroll);
         
         ExternalInterface.addCallback('apiCallback', apiCallback);
         ExternalInterface.addCallback('init', initConnection);

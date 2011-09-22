@@ -34,52 +34,55 @@
     private function initListeners(e:IFlashEvent):void {
       var VK = e.VK;
       VK.addEventListener('onApplicationAdded', function(e:CustomEvent):void {
-        tf.appendText("Application added\n");
+        log("Application added\n");
       });
       VK.addEventListener('onSettingsChanged', function(e:CustomEvent):void {
-        tf.appendText("Settings changed: "+e.params[0]+"\n");
+        log("Settings changed: "+e.params[0]+"\n");
       });
       VK.addEventListener('onBalanceChanged', function(e:CustomEvent):void {
-        tf.appendText("Balance changed: "+e.params[0]+"\n");
+        log("Balance changed: "+e.params[0]+"\n");
       });
       VK.addEventListener('onMerchantPaymentCancel', function(e:CustomEvent):void {
-        tf.appendText("Merchant payment canceled\n");
+        log("Merchant payment canceled\n");
       });
       VK.addEventListener('onMerchantPaymentSuccess', function(e:CustomEvent):void {
-        tf.appendText("Merchant payment success: "+e.params[0]+"\n");
+        log("Merchant payment success: "+e.params[0]+"\n");
       });
       VK.addEventListener('onMerchantPaymentFail', function(e:CustomEvent):void {
-        tf.appendText("Merchant payment failed\n");
+        log("Merchant payment failed\n");
       });
       VK.addEventListener('onProfilePhotoSave', function(e:CustomEvent):void {
-        tf.appendText("Profile photo saved\n");
+        log("Profile photo saved\n");
       });
       VK.addEventListener('onProfilePhotoCancel', function(e:CustomEvent):void {
-        tf.appendText("Profile photo canceled\n");
+        log("Profile photo canceled\n");
       });
       VK.addEventListener('onWallPostSave', function(e:CustomEvent):void {
-        tf.appendText("Wall post saved\n");
+        log("Wall post saved\n");
       });
       VK.addEventListener('onWallPostCancel', function(e:CustomEvent):void {
-        tf.appendText("Wall post canceled\n");
+        log("Wall post canceled\n");
       });
       VK.addEventListener('onWindowResized', function(e:CustomEvent):void {
-        tf.appendText("Window resized: "+e.params[0]+", "+e.params[1]+"\n");
+        log("Window resized: "+e.params[0]+", "+e.params[1]+"\n");
         tf.height = e.params[1] - 16 - sy;
       });
       VK.addEventListener('onLocationChanged', function(e:CustomEvent):void {
-        tf.appendText("Location changed: "+e.params[0]+"\n");
+        log("Location changed: "+e.params[0]+"\n");
       });
       VK.addEventListener('onWindowBlur', function(e:CustomEvent):void {
-        tf.appendText("Window blur\n");
+        log("Window blur\n");
       });
       VK.addEventListener('onWindowFocus', function(e:CustomEvent):void {
-        tf.appendText("Window focus\n");
+        log("Window focus\n");
       });
       VK.addEventListener('onScrollTop', function(e:CustomEvent):void {
-        tf.appendText("scrollTop = "+e.params[0]+"\n");
+        log("onScrollTop: "+e.params[0]+", "+e.params[1]+"\n");
       });
-      tf.appendText("Connection inited.\n");
+      VK.addEventListener('onScroll', function(e:CustomEvent):void {
+        log("onScroll: "+e.params[0]+", "+e.params[1]+"\n");
+      });
+      log("Connection inited.\n");
       
       VK.api('photos.getProfileUploadServer', {}, function(data) {
         upload_url = data.upload_url;
@@ -104,7 +107,7 @@
       format.size = 11;
       tf.defaultTextFormat = format;
       addChild(tf);
-      tf.appendText("Application initialized\n");
+      log("Application initialized\n");
       
       VK = new APIConnection('vk.asmico.ru', initListeners);
       
@@ -173,21 +176,21 @@
                   return _obj;
                 };
             fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, function(e:DataEvent) {
-              tf.appendText("Uploaded.\n");
+              log("Uploaded.\n");
               var r = json2obj(e.data);
               VK.api('photos.saveProfilePhoto', r,  function(data) {
-                tf.appendText("OK: photos.saveProfilePhoto: "+data.photo_src+"\n");
+                log("OK: photos.saveProfilePhoto: "+data.photo_src+"\n");
               }, function(data) {
-                tf.appendText("Error: photos.saveProfilePhoto: #"+data.error_code+" "+data.error_msg+"\n");
+                log("Error: photos.saveProfilePhoto: #"+data.error_code+" "+data.error_msg+"\n");
               });
             });
             fileRef.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent) {
-              tf.appendText("  ... " + Math.round(e.bytesLoaded*100/e.bytesTotal) + "%\n");
+              log("  ... " + Math.round(e.bytesLoaded*100/e.bytesTotal) + "%\n");
             });
             fileRef.addEventListener(Event.SELECT, function(e:Event) {
               var file:FileReference = FileReference(e.target);
               file.upload(new URLRequest(upload_url), 'photo');
-              tf.appendText(file.name+ " start uploading ...\n");
+              log(file.name+ " start uploading ...\n");
             });
             fileRef.browse([new FileFilter(
               "Images (*.jpg, *.jpeg, *.png, *.gif, *.bmp)",
@@ -203,10 +206,10 @@
               photo_id: '-20710465_217925006',
               message: 'Пост из IFlash.'
             }, function(data) {
-              tf.appendText("OK: wall.savePost: "+data.post_hash+" "+data.photo_src+"\n");
+              log("OK: wall.savePost: "+data.post_hash+" "+data.photo_src+"\n");
               VK.callMethod('saveWallPost', data.post_hash);
             }, function(data) {
-              tf.appendText("Error: wall.savePost: #"+data.error_code+" "+data.error_msg+"\n");
+              log("Error: wall.savePost: #"+data.error_code+" "+data.error_msg+"\n");
             });
           }
         },
@@ -245,9 +248,9 @@
           label: 'API.getServerTime',
           listener: function(e:Event):void {
             VK.api('getServerTime', {}, function(data) {
-              tf.appendText("OK: getServerTime: "+data+"\n");
+              log("OK: getServerTime: "+data+"\n");
             }, function(data) {
-              tf.appendText("Error: getServerTime: #"+data.error_code+" "+data.error_msg+"\n");
+              log("Error: getServerTime: #"+data.error_code+" "+data.error_msg+"\n");
             });
           }
         },
@@ -255,9 +258,9 @@
           label: 'API.getProfiles(viewer_id)',
           listener: function(e:Event):void {
             VK.api('getProfiles', {'uids': flashVars.viewer_id}, function(data) {
-              tf.appendText("OK: getProfiles: "+data[0].first_name+" "+data[0].last_name+"\n");
+              log("OK: getProfiles: "+data[0].first_name+" "+data[0].last_name+"\n");
             }, function(data) {
-              tf.appendText("Error: getProfiles: #"+data.error_code+" "+data.error_msg+"\n");
+              log("Error: getProfiles: #"+data.error_code+" "+data.error_msg+"\n");
             });
           }
         },
@@ -267,57 +270,76 @@
             VK.api('wall.post', {
               message: 'Я умею постить на стену. IFlash.'
             }, function(data) {
-              tf.appendText("OK: wall.post: post_id: "+data.post_id+"\n");
+              log("OK: wall.post: post_id: "+data.post_id+"\n");
             }, function(data) {
-              tf.appendText("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
+              log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
             });
           }
         },
-      {
-        label: 'API.wall.post( photo )',
-        listener: function() {
-          VK.api('wall.post', {
-            message: 'Я умею постить на стену фото. IFlash.',
-            attachment: 'photo-20710465_217925006'
-          }, function(data) {
-            tf.appendText("OK: wall.post: post_id: "+data.post_id+"\n");
-          }, function(data) {
-            tf.appendText("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
-          });
+        {
+          label: 'API.wall.post( photo )',
+          listener: function() {
+            VK.api('wall.post', {
+              message: 'Я умею постить на стену фото. IFlash.',
+              attachment: 'photo-20710465_217925006'
+            }, function(data) {
+              log("OK: wall.post: post_id: "+data.post_id+"\n");
+            }, function(data) {
+              log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
+            });
+          }
+        },
+        {
+          label: 'API.wall.post( audio )',
+          listener: function() {
+            VK.api('wall.post', {
+              message: 'Я умею постить на стену музыку. IFlash.',
+              attachment: 'audio1661530_73182523'
+            }, function(data) {
+              log("OK: wall.post: post_id: "+data.post_id+"\n");
+            }, function(data) {
+              log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
+            });
+          }
+        },
+        {
+          label: 'API.wall.post( video )',
+          listener: function() {
+            VK.api('wall.post', {
+              message: 'Я умею постить на стену видео. IFlash.',
+              attachment: 'video1661530_158881807'
+            }, function(data) {
+              log("OK: wall.post: post_id: "+data.post_id+"\n");
+            }, function(data) {
+              log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
+            });
+          }
+        },
+        {
+          label: 'http://vk.com/kolar',
+          listener: function() {
+            VK.navigateToURL('http://vk.com/kolar');
+          }
+        },
+        {
+          label: 'API.wall.post( photo + audio + video )',
+          listener: function() {
+            VK.api('wall.post', {
+              message: 'Я умею постить на стену несколько элементов. IFlash.',
+              attachments: 'photo-20710465_217925006,audio1661530_73182523,video1661530_158881807'
+            }, function(data) {
+              log("OK: wall.post: post_id: "+data.post_id+"\n");
+            }, function(data) {
+              log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
+            });
+          }
+        },
+        {
+          label: 'Subscribe to scroll',
+          listener: function() {
+            VK.callMethod('scrollSubscribe', true);
+          }
         }
-      },
-      {
-        label: 'API.wall.post( audio )',
-        listener: function() {
-          VK.api('wall.post', {
-            message: 'Я умею постить на стену музыку. IFlash.',
-            attachment: 'audio1661530_73182523'
-          }, function(data) {
-            tf.appendText("OK: wall.post: post_id: "+data.post_id+"\n");
-          }, function(data) {
-            tf.appendText("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
-          });
-        }
-      },
-      {
-        label: 'API.wall.post( video )',
-        listener: function() {
-          VK.api('wall.post', {
-            message: 'Я умею постить на стену видео. IFlash.',
-            attachment: 'video1661530_158881807'
-          }, function(data) {
-            tf.appendText("OK: wall.post: post_id: "+data.post_id+"\n");
-          }, function(data) {
-            tf.appendText("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
-          });
-        }
-      },
-      {
-        label: 'http://vk.com/kolar',
-        listener: function() {
-          VK.navigateToURL('http://vk.com/kolar');
-        }
-      }
       ];
       
       var sx = 15;
@@ -343,8 +365,9 @@
       stage.scaleMode = StageScaleMode.NO_SCALE;
     }
     
-    private function onConnectionInit(e:CustomEvent):void {
-      tf.appendText("Connection inited.\n");
+    public function log(msg) {
+      tf.appendText(msg);
+      tf.scrollV = tf.maxScrollV;
     }
   }
 }

@@ -226,7 +226,8 @@
       addVKCallback('onLocationChanged', function(l) { app.onLocationChanged(l); });
       addVKCallback('onWindowFocus', function() { toggleFlash(true); app.onWindowFocus(); });
       addVKCallback('onWindowBlur', function() { toggleFlash(false); app.onWindowBlur(); });
-      addVKCallback('onScrollTop', function(t) { app.onScrollTop(t); });
+      addVKCallback('onScrollTop', function(t, h) { app.onScrollTop(t, h); });
+      addVKCallback('onScroll', function(t, h) { app.onScroll(t, h); });
       addVKCallback('onToggleFlash', function(f) { toggleFlash(f); });
       isVKInited = true;
       if (isFlashReady) {

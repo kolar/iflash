@@ -46,7 +46,7 @@ class APIConnection {
   }
   
   public function debug(msg:Object) {
-    if (!msg || !msg.toString) {
+    if (!msg.toString) {
       return;
     }
     sendData('debug', msg.toString());
@@ -75,6 +75,7 @@ class APIConnection {
   public var onWindowBlur:Function = noop;
   public var onWindowFocus:Function = noop;
   public var onScrollTop:Function = noop;
+  public var onScroll:Function = noop;
   
   private var onConnectionInit:Function = noop;
   
@@ -99,7 +100,8 @@ class APIConnection {
       ExternalInterface.addCallback('onLocationChanged', this, function(l) { this.onLocationChanged(l); });
       ExternalInterface.addCallback('onWindowBlur', this, function() { this.onWindowBlur(); });
       ExternalInterface.addCallback('onWindowFocus', this, function() { this.onWindowFocus(); });
-      ExternalInterface.addCallback('onScrollTop', this, function(t) { this.onScrollTop(t); });
+      ExternalInterface.addCallback('onScrollTop', this, function(t, h) { this.onScrollTop(t, h); });
+      ExternalInterface.addCallback('onScroll', this, function(t, h) { this.onScroll(t, h); });
       
       ExternalInterface.addCallback('apiCallback', this, apiCallback);
       ExternalInterface.addCallback('init', this, initConnection);
