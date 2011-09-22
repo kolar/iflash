@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name          IFlash Helper
-// @version       0.01
+// @version       0.02
 // @description   Упрощает загрузку приложения при использовании IFlash
 // @homepage      https://github.com/kolar/iflash
 // @author        Артём Колногоров
@@ -51,12 +51,67 @@
     }
     return el;
   }
+  function re(el) {
+    el.parentNode && el.parentNode.removeChild(el);
+  }
   function before(el, before_el) {
     return before_el.parentNode.insertBefore(el, before_el);
   }
   function log(msg) {
     console && console.log && console.log('IFlashHelper: ' + msg);
   }
+  ajax = {
+    reqTimeout: null,
+    TIMEOUT: 5000,
+    urlEncodeData: function(data) {
+      var query = [];
+      if (data instanceof Object)
+      {
+        for (var k in data)
+          query.push(encodeURIComponent(k) + "=" + encodeURIComponent(data[k]));
+        return query.join('&');
+      }
+      else
+        return encodeURIComponent(data);
+    },
+    send: function(_url, _data, _callback, _method) {
+      var t = this;
+      t.req = null;
+      if (window.XMLHttpRequest)
+      {
+        try { t.req = new XMLHttpRequest(); }
+        catch (e) {}
+      }
+      else if (window.ActiveXObject)
+      {
+        try { t.req = new ActiveXObject('Msxml2.XMLHTTP'); }
+        catch (e)
+        {
+          try { t.req = new ActiveXObject('Microsoft.XMLHTTP'); }
+          catch (e) {}
+        }
+      }
+      if (t.req)
+      {
+        var m = (_method=="get") ? "get" : "post";
+        t.req.open(m, _url, true);
+        if (m=="post") t.req.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        t.req.onreadystatechange = function()
+        {
+          // Если "Готово"
+          if (t.req.readyState == 4)
+          {
+            clearTimeout(t.reqTimeout);
+            ok = (t.req.status == 200);
+            _callback && _callback(ok, ok ? t.req.responseText : t.req.statusText);
+          }
+        }
+        var d = (m=="post") ? t.urlEncodeData(_data) : null;
+        t.req.send(d);
+        t.reqTimeout = setTimeout(t.req, "abort", t.TIMEOUT);
+      }
+    }
+  };
 
   // helper functions
   var editapp = false;
@@ -74,9 +129,21 @@
   }
   editappCheck();
 
+  function deleteSWF(app_id, swf_id, hash, obj) {
+    ajax.send('editapp', {act: 'a_delete_swf', aid: app_id, swf_id: swf_id, hash: hash}, function() {
+      re(obj);
+      var rows = geByClassName('apps_edit_swf_rows', 'apps_edit_swf_row', 'table');
+      if (rows.length == 1) {
+        re(rows[0]);
+      }
+    });
+  }
+
   function onEditappOpen() {
     log('onEditappOpen');
-    if (ge('app_iframe_url').value.indexOf('flash_url=') != -1) {
+    var flash_url_re = /([?&]flash_url)=?([^&]*)/i,
+        delete_swf_re = /AppsEdit\.deleteSWF\(([0-9]+), ?['"]([0-9a-f]+)['"],/i;
+    if (ge('app_iframe_url').value.search(flash_url_re) != -1) {
       var ifo = ge('apps_edit_iframe_options'),
           tr = geByTag1(ifo, 'tr'), iflash_tr = tr.cloneNode(true),
           tds = geByTag(iflash_tr, 'td'),
@@ -87,13 +154,33 @@
       td_content.innerHTML = '<a onclick="AppsEdit.addSWF();">Загрузить приложение</a>';
       
       var swfs_count = geByClassName('apps_edit_swf_rows', 'apps_edit_swf_row', 'table').length,
-          onLoad = function(href) {
+          onLoad = function(new_flash_url) {
             log('onSWFLoad');
             var old_url = ge('app_iframe_url').value,
-                s = old_url.indexOf('flash_url='),
-                e = old_url.indexOf('&', s),
-                new_url = old_url.substr(0, s) + 'flash_url=' + href.substr(7) + (e == -1 ? '' : old_url.substr(e));
+                m = old_url.match(flash_url_re),
+                old_flash_url = 'http://' + (m[2] || ''),
+                new_url = old_url.replace(flash_url_re, '$1=' + new_flash_url.substr(7));
             ge('app_iframe_url').value = new_url;
+            
+            var rows = geByClassName('apps_edit_swf_rows', 'apps_edit_swf_row', 'table');
+            for (var i=rows.length; i; ) {
+              var row = rows[--i],
+                  a = geByTag1(row, 'a'),
+                  o1 = old_flash_url.split('vk.com').join('vkontakte.ru'),
+                  o2 = old_flash_url.split('vkontakte.ru').join('vk.com');
+              if (a && (a.href == o1 || a.href == o2)) {
+                var tds = geByTag(row, 'td'),
+                    last_td = tds[tds.length - 1],
+                    last_td_html = last_td.innerHTML,
+                    m = last_td_html.match(delete_swf_re),
+                    swf_id = +m[1] || 0,
+                    hash = m[2] || '',
+                    app_id = +ge('app_id').value || 0;
+                deleteSWF(app_id, swf_id, hash, row);
+                break;
+              }
+            }
+            
             ge('app_save_btn').click();
           },
           onLoadCheck = function() {
