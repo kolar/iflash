@@ -6,6 +6,8 @@
 class TestApp extends MovieClip {
   private var tf:TextField;
   private var VK:APIConnection;
+  private var app_width:Number;
+  private var widget_mode:Boolean;
   public var sy:Number;
   public var upload_url:String;
   
@@ -13,6 +15,8 @@ class TestApp extends MovieClip {
     init();
   }
   private function init() {
+    widget_mode = _root.widget == 1;
+    app_width = widget_mode ? 200 : 607;
     
     tf = this.createTextField('tf', 100, 10, 50, 100, 100);
     tf.border = true;
@@ -96,25 +100,29 @@ class TestApp extends MovieClip {
         label: 'Install application',
         listener: function() {
           t.VK.callMethod('showInstallBox');
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'Settings',
         listener: function() {
           t.VK.callMethod('showSettingsBox', 0);
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'Invite friends',
         listener: function() {
           t.VK.callMethod('showInviteBox');
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'Add votes',
         listener: function() {
           t.VK.callMethod('showPaymentBox', 0);
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'Buy a good',
@@ -129,7 +137,8 @@ class TestApp extends MovieClip {
             item_quantity_1: 1,
             item_digital_1: 1
           });
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'Change photo',
@@ -175,7 +184,8 @@ class TestApp extends MovieClip {
             description: "Images (*.jpg, *.jpeg, *.png, *.gif, *.bmp)",
             extension: "*.jpg;*.jpeg;*.png;*.gif;*.bmp"
           }]);
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'Add wall post',
@@ -190,38 +200,44 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: wall.savePost: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'Resize app',
         listener: function() {
           t.VK.callMethod('resizeWindow', 607, 777);
           t.tf._height = 777 - 16 - t.sy;
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'Scroll window',
         listener: function() {
           t.VK.callMethod('scrollWindow', 180, 200);
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'Change title',
         listener: function() {
           t.VK.callMethod('setTitle', 'IFlash is good!');
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'Change location',
         listener: function() {
           t.VK.callMethod('setLocation', 'iflash');
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'parent.scrollTop = ?',
         listener: function() {
           t.VK.callMethod('scrollTop');
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'API.getServerTime()',
@@ -231,7 +247,8 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: getServerTime: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'API.getProfiles( viewer_id )',
@@ -241,7 +258,8 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: getProfiles: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'API.wall.post',
@@ -253,7 +271,8 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'API.wall.post( photo )',
@@ -266,7 +285,8 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'API.wall.post( audio )',
@@ -279,7 +299,8 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'API.wall.post( video )',
@@ -292,13 +313,15 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'http://vk.com/kolar',
         listener: function() {
           t.VK.navigateToURL('http://vk.com/kolar');
-        }
+        },
+        showInWidgetMode: true
       },
       {
         label: 'API.wall.post( photo + audio + video )',
@@ -311,33 +334,38 @@ class TestApp extends MovieClip {
           }, function(data) {
             t.log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
           });
-        }
+        },
+        showInWidgetMode: false
       },
       {
         label: 'Subscribe to scroll',
         listener: function() {
           t.VK.callMethod('scrollSubscribe', true);
-        }
+        },
+        showInWidgetMode: true
       }
     ];
     
     var sx = 15;
     sy = 15;
     for (var i=0; i<btns.length; i++) {
+      if (widget_mode && !btns[i].showInWidgetMode) {
+        continue;
+      }
       var btn = this.attachMovie('VKButton', 'btn'+i, i);
-      btn._x = sx;
-      btn._y = sy;
       btn.label = btns[i].label;
-      btn.onPress = btns[i].listener;
-      sx += Math.round(btn._width) + 12;
-      if (sx > 500) {
+      if (sx + btn._width > app_width - 10) {
         sx = 15; sy += 30;
       }
+      btn._x = sx;
+      btn._y = sy;
+      btn.onPress = btns[i].listener;
+      sx += Math.round(btn._width) + 12;
     }
     
     tf._x = 15;
-    tf._y = sx==15 ? sy += 5 : sy += 35;
-    tf._width = 577;
+    tf._y = sy += 35;
+    tf._width = app_width - 30;
     tf._height = Stage.height - 16 - sy;
     
     Stage.align = "TL";

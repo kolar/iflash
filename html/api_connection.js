@@ -127,7 +127,7 @@
           paramsStr.push('<param name="' + i + '" value="' + escapeAttr(p) + '" />');
         }
       }
-      return '<object ' + wrapParam + attrStr.join('') +'>' + paramsStr.join('') + '</object>';
+      return '<object ' + wrapParam + attrStr.join('') + '>' + paramsStr.join('') + '</object>';
     };
     if (version < 7) version = 0;
     version = parseInt(version) || 0;

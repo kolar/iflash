@@ -155,6 +155,7 @@
       
       var swfs_count = geByClassName('apps_edit_swf_rows', 'apps_edit_swf_row', 'table').length,
           onLoad = function(new_flash_url) {
+            if (!ge('apps_edit_iframe_options').offsetHeight) return;
             log('onSWFLoad');
             var old_url = ge('app_iframe_url').value,
                 m = old_url.match(flash_url_re),

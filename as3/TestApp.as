@@ -20,6 +20,8 @@
   public class TestApp extends Sprite {
     private var tf:TextField;
     private var VK:APIConnection;
+    private var app_width:int;
+    private var widget_mode:Boolean;
     public var sy:int;
     public var upload_url:String;
     
@@ -94,6 +96,10 @@
         removeEventListener(e.type, init);
       }
       
+      var flashVars:Object = stage.loaderInfo.parameters as Object;
+      widget_mode = flashVars.widget == 1;
+      app_width = widget_mode ? 200 : 607;
+      
       tf = new TextField();
       tf.border = true;
       tf.borderColor = 0xDAE2E8;
@@ -111,32 +117,34 @@
       
       VK = new APIConnection('vk.asmico.ru', initListeners);
       
-      var flashVars:Object = stage.loaderInfo.parameters as Object; 
-      
       var btns:Array = [
         {
           label: 'Install application',
           listener: function(e:Event):void {
             VK.callMethod('showInstallBox');
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'Settings',
           listener: function(e:Event):void {
             VK.callMethod('showSettingsBox', 0);
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'Invite friends',
           listener: function(e:Event):void {
             VK.callMethod('showInviteBox');
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'Add votes',
           listener: function(e:Event):void {
             VK.callMethod('showPaymentBox', 0);
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'Buy a good',
@@ -151,7 +159,8 @@
               item_quantity_1: 1,
               item_digital_1: 1
             });
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'Change photo',
@@ -196,7 +205,8 @@
               "Images (*.jpg, *.jpeg, *.png, *.gif, *.bmp)",
               "*.jpg;*.jpeg;*.png;*.gif;*.bmp"
             )]);
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'Add wall post',
@@ -211,38 +221,44 @@
             }, function(data) {
               log("Error: wall.savePost: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'Resize app',
           listener: function(e:Event):void {
             VK.callMethod('resizeWindow', 607, 777);
             tf.height = 777 - 16 - sy;
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'Scroll window',
           listener: function(e:Event):void {
             VK.callMethod('scrollWindow', 180, 200);
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'Change title',
           listener: function(e:Event):void {
             VK.callMethod('setTitle', 'IFlash is good!');
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'Change location',
           listener: function(e:Event):void {
             VK.callMethod('setLocation', 'iflash');
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'parent.scrollTop = ?',
           listener: function(e:Event):void {
             VK.callMethod('scrollTop');
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'API.getServerTime',
@@ -252,7 +268,8 @@
             }, function(data) {
               log("Error: getServerTime: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'API.getProfiles(viewer_id)',
@@ -262,7 +279,8 @@
             }, function(data) {
               log("Error: getProfiles: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'API.wall.post',
@@ -274,7 +292,8 @@
             }, function(data) {
               log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'API.wall.post( photo )',
@@ -287,7 +306,8 @@
             }, function(data) {
               log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'API.wall.post( audio )',
@@ -300,7 +320,8 @@
             }, function(data) {
               log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'API.wall.post( video )',
@@ -313,13 +334,15 @@
             }, function(data) {
               log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'http://vk.com/kolar',
           listener: function() {
             VK.navigateToURL('http://vk.com/kolar');
-          }
+          },
+          showInWidgetMode: true
         },
         {
           label: 'API.wall.post( photo + audio + video )',
@@ -332,33 +355,38 @@
             }, function(data) {
               log("Error: wall.post: #"+data.error_code+" "+data.error_msg+"\n");
             });
-          }
+          },
+          showInWidgetMode: false
         },
         {
           label: 'Subscribe to scroll',
           listener: function() {
             VK.callMethod('scrollSubscribe', true);
-          }
+          },
+          showInWidgetMode: true
         }
       ];
       
       var sx = 15;
       sy = 15;
       for (var i:uint; i<btns.length; i++) {
+        if (widget_mode && !btns[i].showInWidgetMode) {
+          continue;
+        }
         var btn:VKButton = new VKButton(btns[i].label);
+        if (sx + btn.width > app_width - 10) {
+          sx = 15; sy += 30;
+        }
         btn.x = sx;
         btn.y = sy;
         addChild(btn);
         btn.addEventListener(MouseEvent.CLICK, btns[i].listener);
         sx += btn.width + 12;
-        if (sx > 500) {
-          sx = 15; sy += 30;
-        }
       }
       
       tf.x = 15;
-      tf.y = sx==15 ? sy += 5 : sy += 35;
-      tf.width = 577;
+      tf.y = sy += 35;
+      tf.width = app_width - 30;
       tf.height = stage.stageHeight - 16 - sy;
       
       stage.align = StageAlign.TOP_LEFT;
