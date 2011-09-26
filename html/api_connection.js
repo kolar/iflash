@@ -98,6 +98,7 @@
         height: opts.height,
         src: version >= opts.version ? opts.url : opts.express
       }, params);
+      if (opts.className) params['class'] = opts.className;
       var paramsStr = [];
       for (var i in params) {
         var p = params[i];
@@ -113,6 +114,7 @@
         width: opts.width,
         height: opts.height
       };
+      if (opts.className) attr['class'] = opts.className;
       var attrStr = [];
       for (var i in attr) {
         var p = attr[i];
@@ -274,7 +276,7 @@
           width: w,
           height: h,
           version: 9,
-          'class': (wm != 'opaque' && wm != 'transparent') ? 'need2hide' : null
+          className: (wm != 'opaque' && wm != 'transparent') ? 'need2hide' : null
         }, {
           allowfullscreen: 'true',
           allownetworking: 'all',
