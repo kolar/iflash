@@ -98,24 +98,6 @@
       customEvent.apply(this, paramsArr);
     }
     
-    private function onMerchantPaymentCancel(...params): void {
-      var paramsArr:Array = params as Array;
-      paramsArr.unshift('onMerchantPaymentCancel');
-      customEvent.apply(this, paramsArr);
-    }
-    
-    private function onMerchantPaymentSuccess(...params): void {
-      var paramsArr:Array = params as Array;
-      paramsArr.unshift('onMerchantPaymentSuccess');
-      customEvent.apply(this, paramsArr);
-    }
-    
-    private function onMerchantPaymentFail(...params): void {
-      var paramsArr:Array = params as Array;
-      paramsArr.unshift('onMerchantPaymentFail');
-      customEvent.apply(this, paramsArr);
-    }
-    
     private function onProfilePhotoSave(...params): void {
       var paramsArr:Array = params as Array;
       paramsArr.unshift('onProfilePhotoSave');
@@ -176,6 +158,24 @@
       customEvent.apply(this, paramsArr);
     }
     
+    private function onOrderCancel(...params): void {
+      var paramsArr:Array = params as Array;
+      paramsArr.unshift('onOrderCancel');
+      customEvent.apply(this, paramsArr);
+    }
+    
+    private function onOrderSuccess(...params): void {
+      var paramsArr:Array = params as Array;
+      paramsArr.unshift('onOrderSuccess');
+      customEvent.apply(this, paramsArr);
+    }
+    
+    private function onOrderFail(...params): void {
+      var paramsArr:Array = params as Array;
+      paramsArr.unshift('onOrderFail');
+      customEvent.apply(this, paramsArr);
+    }
+    
     /*
      * Private methods
      */
@@ -186,19 +186,19 @@
         ExternalInterface.addCallback('onApplicationAdded', onApplicationAdded);
         ExternalInterface.addCallback('onSettingsChanged', onSettingsChanged);
         ExternalInterface.addCallback('onBalanceChanged', onBalanceChanged);
-        ExternalInterface.addCallback('onMerchantPaymentCancel', onMerchantPaymentCancel);
-        ExternalInterface.addCallback('onMerchantPaymentSuccess', onMerchantPaymentSuccess);
-        ExternalInterface.addCallback('onMerchantPaymentFail', onMerchantPaymentFail);
         ExternalInterface.addCallback('onProfilePhotoSave', onProfilePhotoSave);
         ExternalInterface.addCallback('onProfilePhotoCancel', onProfilePhotoCancel);
-        ExternalInterface.addCallback('﻿onWallPostSave', ﻿onWallPostSave);
-        ExternalInterface.addCallback('﻿﻿onWallPostCancel', ﻿﻿onWallPostCancel);
+        ExternalInterface.addCallback('onWallPostSave', onWallPostSave);
+        ExternalInterface.addCallback('onWallPostCancel', onWallPostCancel);
         ExternalInterface.addCallback('onWindowResized', onWindowResized);
         ExternalInterface.addCallback('onLocationChanged', onLocationChanged);
         ExternalInterface.addCallback('onWindowBlur', onWindowBlur);
         ExternalInterface.addCallback('onWindowFocus', onWindowFocus);
         ExternalInterface.addCallback('onScrollTop', onScrollTop);
         ExternalInterface.addCallback('onScroll', onScroll);
+        ExternalInterface.addCallback('onOrderCancel', onOrderCancel);
+        ExternalInterface.addCallback('onOrderSuccess', onOrderSuccess);
+        ExternalInterface.addCallback('onOrderFail', onOrderFail);
         
         ExternalInterface.addCallback('apiCallback', apiCallback);
         ExternalInterface.addCallback('init', initConnection);

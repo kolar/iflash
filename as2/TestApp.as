@@ -48,15 +48,6 @@ class TestApp extends MovieClip {
       VK.onBalanceChanged = function(b) {
         t.log("Balance changed: " + b + "\n");
       };
-      VK.onMerchantPaymentCancel = function() {
-        t.log("Merchant payment canceled\n");
-      };
-      VK.onMerchantPaymentSuccess = function(m) {
-        t.log("Merchant payment success: " + m + "\n");
-      };
-      VK.onMerchantPaymentFail = function() {
-        t.log("Merchant payment failed\n");
-      };
       VK.onProfilePhotoSave = function() {
         t.log("Profile photo saved\n");
       };
@@ -87,6 +78,15 @@ class TestApp extends MovieClip {
       };
       VK.onScroll = function(s, h) {
         t.log("onScroll: " + s + ", " + h + "\n");
+      };
+      VK.onOrderCancel = function() {
+        t.log("Order canceled\n");
+      };
+      VK.onOrderSuccess = function(o) {
+        t.log("Order success: " + o + "\n");
+      };
+      VK.onOrderFail = function(e) {
+        t.log("Order failed: " + e + "\n");
       };
       t.log("Connection inited.\n");
       
@@ -125,17 +125,11 @@ class TestApp extends MovieClip {
         showInWidgetMode: false
       },
       {
-        label: 'Buy a good',
+        label: 'Order box',
         listener: function() {
-          t.VK.callMethod('showMerchantPaymentBox', {
-            merchant_id: 11345,
-            item_id_1: 'my_id_2',
-            item_name_1: 'Единственный цифровой товар',
-            item_description_1: 'Жалко расставаться',
-            item_currency_1: 643,
-            item_price_1: '777.77',
-            item_quantity_1: 1,
-            item_digital_1: 1
+          t.VK.callMethod('showOrderBox', {
+            type: 'item',
+            item: 'sample_item'
           });
         },
         showInWidgetMode: false

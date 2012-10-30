@@ -217,9 +217,6 @@
       addVKCallback('onApplicationAdded', function() { app.onApplicationAdded(); });
       addVKCallback('onSettingsChanged', function(s) { app.onSettingsChanged(s); });
       addVKCallback('onBalanceChanged', function(b) { app.onBalanceChanged(b); });
-      addVKCallback('onMerchantPaymentCancel', function() { app.onMerchantPaymentCancel(); });
-      addVKCallback('onMerchantPaymentSuccess', function(m) { app.onMerchantPaymentSuccess(m); });
-      addVKCallback('onMerchantPaymentFail', function() { app.onMerchantPaymentFail(); });
       addVKCallback('onProfilePhotoSave', function() { app.onProfilePhotoSave(); });
       addVKCallback('onProfilePhotoCancel', function() { app.onProfilePhotoCancel(); });
       addVKCallback('onWallPostSave', function() { app.onWallPostSave(); });
@@ -231,6 +228,9 @@
       addVKCallback('onScrollTop', function(t, h) { app.onScrollTop(t, h); });
       addVKCallback('onScroll', function(t, h) { app.onScroll(t, h); });
       addVKCallback('onToggleFlash', function(f) { toggleFlash(f); });
+      addVKCallback('onOrderCancel', function() { app.onOrderCancel(); });
+      addVKCallback('onOrderSuccess', function(o) { app.onOrderSuccess(o); });
+      addVKCallback('onOrderFail', function(e) { app.onOrderFail(e); });
       isVKInited = true;
       if (isFlashReady) {
         flashInit();

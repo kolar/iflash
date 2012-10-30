@@ -63,9 +63,6 @@ class APIConnection {
   public var onApplicationAdded:Function = noop;
   public var onSettingsChanged:Function = noop;
   public var onBalanceChanged:Function = noop;
-  public var onMerchantPaymentCancel:Function = noop;
-  public var onMerchantPaymentSuccess:Function = noop;
-  public var onMerchantPaymentFail:Function = noop;
   public var onProfilePhotoSave:Function = noop;
   public var onProfilePhotoCancel:Function = noop;
   public var onWallPostSave:Function = noop;
@@ -76,6 +73,9 @@ class APIConnection {
   public var onWindowFocus:Function = noop;
   public var onScrollTop:Function = noop;
   public var onScroll:Function = noop;
+  public var onOrderCancel:Function = noop;
+  public var onOrderSuccess:Function = noop;
+  public var onOrderFail:Function = noop;
   
   private var onConnectionInit:Function = noop;
   
@@ -89,9 +89,6 @@ class APIConnection {
       ExternalInterface.addCallback('onApplicationAdded', this, function() { this.onApplicationAdded(); });
       ExternalInterface.addCallback('onSettingsChanged', this, function(s) { this.onSettingsChanged(s); });
       ExternalInterface.addCallback('onBalanceChanged', this, function(b) { this.onBalanceChanged(b); });
-      ExternalInterface.addCallback('onMerchantPaymentCancel', this, function() { this.onMerchantPaymentCancel(); });
-      ExternalInterface.addCallback('onMerchantPaymentSuccess', this, function(m) { this.onMerchantPaymentSuccess(m); });
-      ExternalInterface.addCallback('onMerchantPaymentFail', this, function() { this.onMerchantPaymentFail(); });
       ExternalInterface.addCallback('onProfilePhotoSave', this, function() { this.onProfilePhotoSave(); });
       ExternalInterface.addCallback('onProfilePhotoCancel', this, function() { this.onProfilePhotoCancel(); });
       ExternalInterface.addCallback('onWallPostSave', this, function() { this.onWallPostSave(); });
@@ -102,6 +99,9 @@ class APIConnection {
       ExternalInterface.addCallback('onWindowFocus', this, function() { this.onWindowFocus(); });
       ExternalInterface.addCallback('onScrollTop', this, function(t, h) { this.onScrollTop(t, h); });
       ExternalInterface.addCallback('onScroll', this, function(t, h) { this.onScroll(t, h); });
+      ExternalInterface.addCallback('onOrderCancel', this, function() { this.onOrderCancel(); });
+      ExternalInterface.addCallback('onOrderSuccess', this, function(o) { this.onOrderSuccess(o); });
+      ExternalInterface.addCallback('onOrderFail', this, function(e) { this.onOrderFail(e); });
       
       ExternalInterface.addCallback('apiCallback', this, apiCallback);
       ExternalInterface.addCallback('init', this, initConnection);

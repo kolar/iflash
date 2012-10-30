@@ -44,15 +44,6 @@
       VK.addEventListener('onBalanceChanged', function(e:CustomEvent):void {
         log("Balance changed: "+e.params[0]+"\n");
       });
-      VK.addEventListener('onMerchantPaymentCancel', function(e:CustomEvent):void {
-        log("Merchant payment canceled\n");
-      });
-      VK.addEventListener('onMerchantPaymentSuccess', function(e:CustomEvent):void {
-        log("Merchant payment success: "+e.params[0]+"\n");
-      });
-      VK.addEventListener('onMerchantPaymentFail', function(e:CustomEvent):void {
-        log("Merchant payment failed\n");
-      });
       VK.addEventListener('onProfilePhotoSave', function(e:CustomEvent):void {
         log("Profile photo saved\n");
       });
@@ -83,6 +74,15 @@
       });
       VK.addEventListener('onScroll', function(e:CustomEvent):void {
         log("onScroll: "+e.params[0]+", "+e.params[1]+"\n");
+      });
+      VK.addEventListener('onOrderCancel', function(e:CustomEvent):void {
+        log("Order canceled\n");
+      });
+      VK.addEventListener('onOrderSuccess', function(e:CustomEvent):void {
+        log("Order success: "+e.params[0]+"\n");
+      });
+      VK.addEventListener('onOrderFail', function(e:CustomEvent):void {
+        log("Order failed: "+e.params[0]+"\n");
       });
       log("Connection inited.\n");
       
@@ -147,17 +147,11 @@
           showInWidgetMode: false
         },
         {
-          label: 'Buy a good',
+          label: 'Order box',
           listener: function(e:Event):void {
-            VK.callMethod('showMerchantPaymentBox', {
-              merchant_id: 11345,
-              item_id_1: 'my_id_2',
-              item_name_1: 'Единственный цифровой товар',
-              item_description_1: 'Жалко расставаться',
-              item_currency_1: 643,
-              item_price_1: '777.77',
-              item_quantity_1: 1,
-              item_digital_1: 1
+            VK.callMethod('showOrderBox', {
+              type: 'item',
+              item: 'sample_item'
             });
           },
           showInWidgetMode: false
